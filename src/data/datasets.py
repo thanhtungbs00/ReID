@@ -113,6 +113,16 @@ class ImageDataset(torch.utils.data.Dataset):
             "classnames": self.classnames
         })
 
+    def classes_count(self):
+        return len(set(self.filename_to_class_idx.values()))
+
+    def get_random_class_idxs(self, classes_count):
+        classes = set(self.filename_to_class_idx.values())
+        return random.sample(classes, classes_count)
+
+    def samples_count(self, class_idx):
+        return len([x for x in self.filename_to_class_idx if self.filename_to_class_idx[x] == class_idx])
+
 
 def train_test_split(dataset, split_rate=0.5):
     t = int(split_rate * len(dataset))
@@ -121,10 +131,8 @@ def train_test_split(dataset, split_rate=0.5):
 
 if __name__ == "__main__":
     dataset = ImageDataset("./dataset/processed/metadata.json")
-    print(len(dataset))
-    l, r = dataset.random_split_per_class(left_rate=0.5)
-    print(l[0][1])
-    print(r[0][1])
+    print(dataset.get_random_class_idxs(classes_count=1))
+
     # dataloader = torch.utils.data.DataLoader(
     #     dataset, batch_size=2, shuffle=True)
     # for i in dataloader:

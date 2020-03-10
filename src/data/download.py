@@ -1,10 +1,11 @@
 ''' This file contains downloading scripts '''
 
-# TODO: Downloading scripts here
+# TODO: Downloading scripts here. Data would be stored in dataset/raw
 
 import os
 import shutil
 import zipfile
+
 
 def copytree(src, dst, symlinks=False, ignore=None):
     if not os.path.exists(dst):
@@ -19,18 +20,5 @@ def copytree(src, dst, symlinks=False, ignore=None):
                 shutil.copy2(s, d)
 
 
-fileurl = "/mnt/c/dogs-vs-cats.zip"
-def download():
-    shutil.copy2(src=fileurl, dst="./data/raw/")
-
-def extract():
-    with zipfile.ZipFile("./data/raw/dogs-vs-cats.zip", 'r') as zip_ref:
-        zip_ref.extractall("./data/interim/")
-    with zipfile.ZipFile("./data/interim/train.zip", 'r') as zip_ref:
-        zip_ref.extractall("./data/interim/train/")
-    
-
-
 if __name__ == "__main__":
     download()
-    extract()

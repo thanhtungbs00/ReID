@@ -1,53 +1,60 @@
+import torch
 import pytorch_lightning as pl
-
 import src
 
 
-class DogCatClassifier(pl.LightningModule):
-
-    # Data processing
-    def prepare_data(self):
-        return src.data.prepare_data(self)
-
-    def train_dataloader(self):
-        return NotImplementedError
-
-    def val_dataloader(self):
-        return NotImplementedError
-
-    def test_dataloader(self):
-        return NotImplementedError
+class Classifier(pl.LightningModule):
 
     # Layers specification and feeding process
     def __init__(self):
-        super(DogCatClassifier, self).__init__()
-        src.models.model.define_layers(self)
+        super(Classifier, self).__init__()
+        src.models.define_layers(self)
 
     def forward(self, x):
         return src.models.model.forward(self, x)
 
     # Optimizer
     def configure_optimizers(self):
-        return NotImplementedError
+        return src.optimizers.configure_optimizers(self)
+
+    # Data processing
+    def prepare_data(self):
+        return src.data.prepare_data(self)
+
+    def train_dataloader(self):
+        return src.data.train_loader(self)
+
+    def val_dataloader(self):
+        return src.data.val_loader(self)
+
+    def test_dataloader(self):
+        return src.data.test_loader(self)
 
     # Training and validation specification
+
     def training_step(self, *args, **kwargs):
-        return NotImplementedError
+        return NotImplemented
 
     def training_step_end(self, *args, **kwargs):
-        return NotImplementedError
+        return NotImplemented
 
     def validation_step(self, *args, **kwargs):
-        return NotImplementedError
+        return NotImplemented
 
     def validation_epoch_end(self, outputs):
-        return NotImplementedError
+        return NotImplemented
 
 
 def main():
 
     # Step 1: Prepare data
-    download()
+    classifier = Classifier()
+    classifier.prepare_data()
+    dataloader = torch.utils.data.DataLoader(
+        classifier.training_set, batch_size=2)
+    for i in dataloader:
+        print(i)
+        break
     return 0
 
 

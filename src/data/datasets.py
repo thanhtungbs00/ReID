@@ -5,6 +5,8 @@ import numpy as np
 import random
 
 
+# Configurations
+
 def imread(path):
     return cv2.imread(path)
 
@@ -85,24 +87,26 @@ class ImageDataset(torch.utils.data.Dataset):
                 img = self.transform(img)
             return img, self.filename_to_class_idx[filename]
 
-        elif type(idx) is tuple:
+        elif type(idx) is tuple or type(idx) is list:
             classidx, itemidx = idx
             subidx = [
                 x for x in self.filename_to_class_idx if self.filename_to_class_idx[x] == classidx]
             if len(subidx) == 0:
                 raise IndexError("Class index not found in the dataset")
+            # print(subidx)
             if itemidx >= len(subidx):
                 raise IndexError(
-                    "Class doesn't have enough samples for index " + itemidx)
+                    "Class doesn't have enough samples for index " + str(itemidx))
             filename = subidx[itemidx]
             img = imread(filename)
             if img is None:
                 return None
             if self.transform is not None:
                 img = self.transform(img)
-                return img, classidx
-            else:
-                return None
+            return img, classidx
+        else:
+            print(idx)
+            raise BaseException("Lỗi rồi má ơi")
 
     def __len__(self):
         return len(self.filename_list)
@@ -130,11 +134,4 @@ def train_test_split(dataset, split_rate=0.5):
 
 
 if __name__ == "__main__":
-    dataset = ImageDataset("./dataset/processed/metadata.json")
-    print(dataset.get_random_class_idxs(classes_count=1))
-
-    # dataloader = torch.utils.data.DataLoader(
-    #     dataset, batch_size=2, shuffle=True)
-    # for i in dataloader:
-    #     print(i)
-    #     break
+    pass

@@ -8,7 +8,9 @@ import random
 # Configurations
 
 def imread(path):
-    return cv2.imread(path)
+    img = cv2.imread(path)
+    img = np.transpose(img, axes=(2, 0, 1))
+    return img/256.0
 
 
 class ImageDataset(torch.utils.data.Dataset):

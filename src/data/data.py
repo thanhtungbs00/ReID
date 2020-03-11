@@ -20,8 +20,11 @@ from torch.utils.data.dataloader import DataLoader
 image_width = 32
 image_height = 32
 accepted_exts = ['.jpg', '.jpeg', '.png']
-class_per_batch = 4
-samples_per_class_per_batch = 4
+class_per_batch = 5
+samples_per_class_per_batch = 10
+train_iters_per_epoch = 1000
+val_iters_per_epoch = 25
+test_iters_per_epoch = 100
 # Main method
 
 
@@ -50,13 +53,14 @@ def prepare_data(self):
     self.testing_set = testing_set
 
 
-def train_loader(self: Classifier):
+def train_loader(self):
     return DataLoader(
         self.training_set,
         batch_sampler=RandomBalanceBatchSampler(
             datasource=self.training_set,
             classes_count=class_per_batch,
-            samples_per_class_count=samples_per_class_per_batch
+            samples_per_class_count=samples_per_class_per_batch,
+            iters_count=train_iters_per_epoch
         ))
 
 
@@ -66,7 +70,8 @@ def val_loader(self):
         batch_sampler=RandomBalanceBatchSampler(
             datasource=self.validation_set,
             classes_count=class_per_batch,
-            samples_per_class_count=samples_per_class_per_batch
+            samples_per_class_count=samples_per_class_per_batch,
+            iters_count=val_iters_per_epoch
         ))
 
 
@@ -76,7 +81,8 @@ def test_loader(self):
         batch_sampler=RandomBalanceBatchSampler(
             datasource=self.testing_set,
             classes_count=class_per_batch,
-            samples_per_class_count=samples_per_class_per_batch
+            samples_per_class_count=samples_per_class_per_batch,
+            iters_count=test_iters_per_epoch
         ))
 
 

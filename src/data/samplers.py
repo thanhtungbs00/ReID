@@ -15,7 +15,7 @@ class RandomBalanceBatchSampler(torch.utils.data.Sampler):
         self.iters_count = iters_count
 
     def __len__(self):
-        return 1
+        return self.iters_count
 
     def __iter__(self):
         for _ in range(self.iters_count):

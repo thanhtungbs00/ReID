@@ -65,18 +65,7 @@ class Classifier(pl.LightningModule):
 
 def main():
 
-    # Step 1: Prepare data
     classifier = Classifier()
-
-    # classifier.prepare_data()
-    # dataloader = classifier.train_dataloader()
-    # for i in dataloader:
-    #     x, y = i
-    #     x = x.float
-    #     print(x)
-    #     yp = classifier.forward(x)
-    #     print(yp.size())
-
     trainer = pl.Trainer(check_val_every_n_epoch=100)
     trainer.fit(classifier)
     return 0

@@ -22,8 +22,8 @@ image_height = 32
 accepted_exts = ['.jpg', '.jpeg', '.png']
 class_per_batch = 5
 samples_per_class_per_batch = 10
-train_iters_per_epoch = 1000
-val_iters_per_epoch = 25
+train_iters_per_epoch = 100
+val_iters_per_epoch = 50
 test_iters_per_epoch = 100
 # Main method
 

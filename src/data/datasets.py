@@ -107,8 +107,7 @@ class ImageDataset(torch.utils.data.Dataset):
                 img = self.transform(img)
             return img, classidx
         else:
-            print(idx)
-            raise BaseException("Lỗi rồi má ơi")
+            raise BaseException("Type mismatch in index for __getitem__, expect 'int' or 2-tuple instead of" + str(type(idx)))
 
     def __len__(self):
         return len(self.filename_list)

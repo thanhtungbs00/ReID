@@ -66,7 +66,7 @@ class Classifier(pl.LightningModule):
 def main():
 
     classifier = Classifier()
-    trainer = pl.Trainer(check_val_every_n_epoch=100)
+    trainer = pl.Trainer(max_epochs=100, gpus=0, check_val_every_n_epoch=10,)
     trainer.fit(classifier)
     return 0
 

@@ -1,93 +1,35 @@
 import pytorch_lightning as pl
 import torch.nn as nn
 import torch
+import torchvision.models as models
 
+class Resnet18Embedding(nn.Module):
+    def __init__(self, embedding_dimension=128, pretrained=False, normalized = True):
+        super(Resnet18Embedding, self).__init__()
+        self.embedding_dimension = embedding_dimension
+        self.normalized = normalized
+        self.model = torchvision.models.resnet18(pretrained=pretrained)
+        input_features_fc_layer = self.model.fc.in_features
+        # Output embedding
+        self.model.fc = nn.Linear(input_features_fc_layer, embedding_dimension)
+        self.fine_tuning = True
 
-def define_layers(self):
-    # input_shape: 3x32x32
-    self.layer1 = nn.Sequential(
-        nn.Conv2d(
-            in_channels=3,
-            out_channels=8,
-            kernel_size=(3, 3),
-            padding=(1, 1)),
-        nn.MaxPool2d(
-            kernel_size=(2, 2)),
-        nn.ReLU())
-    # 8x16x16
-    self.layer2 = nn.Sequential(
-        nn.Conv2d(
-            in_channels=8,
-            out_channels=16,
-            kernel_size=(3, 3),
-            padding=(1, 1)),
-        nn.MaxPool2d(
-            kernel_size=(2, 2)),
-        nn.ReLU())
-    # 16x8x8
-    self.layer3 = nn.Sequential(
-        nn.Conv2d(
-            in_channels=16,
-            out_channels=32,
-            kernel_size=(3, 3),
-            padding=(1, 1)),
-        nn.MaxPool2d(
-            kernel_size=(2, 2)),
-        nn.ReLU())
-    # 32x4x4
-    self.layer4 = nn.Sequential(
-        nn.Conv2d(
-            in_channels=32,
-            out_channels=64,
-            kernel_size=(3, 3),
-            padding=(1, 1)),
-        nn.MaxPool2d(
-            kernel_size=(2, 2)),
-        nn.ReLU())
-    # 64x2x2
-    self.layer5 = nn.Sequential(
-        nn.Conv2d(
-            in_channels=64,
-            out_channels=128,
-            kernel_size=(3, 3),
-            padding=(1, 1)),
-        nn.MaxPool2d(
-            kernel_size=(2, 2)),
-        nn.ReLU())
-    # 128x1x1
-    # view: 128
-    self.fc1 = nn.Sequential(
-        nn.Linear(
-            in_features=128,
-            out_features=64
-        ),
-        nn.ReLU())
-    # 64
-    self.fc2 = nn.Sequential(
-        nn.Linear(
-            in_features=64,
-            out_features=16
-        ),
-        nn.ReLU())
-    # 16
-    self.fc3 = nn.Sequential(
-        nn.Linear(
-            in_features=16,
-            out_features=10
-        ),
-        nn.Sigmoid())
+    def l2_norm(self, input):
+        """Perform l2 normalization operation on an input vector.
+        code copied from liorshk's repository: https://github.com/liorshk/facenet_pytorch/blob/master/model.py
+        """
+        input_size = input.size()
+        buffer = torch.pow(input, 2)
+        normp = torch.sum(buffer, 1).add_(1e-10)
+        norm = torch.sqrt(normp)
+        _output = torch.div(input, norm.view(-1, 1).expand_as(input))
+        output = _output.view(input_size)
+        return output
 
-
-def forward(self, x):
-    x = x.float()
-    bsize, w, h, c = x.size()
-    x = self.layer1(x)
-    x = self.layer2(x)
-    x = self.layer3(x)
-    x = self.layer4(x)
-    x = self.layer5(x)
-    x = x.view(bsize, 128)
-    x = self.fc1(x)
-    x = self.fc2(x)
-    x = self.fc3(x)
-    return x
+    def forward(self, images):
+        """Forward pass to output the embedding vector (feature vector) after l2-normalization and multiplication
+        by scalar (alpha)."""
+        embedding = self.model(images)
+        if self.normalized:
+          embedding = 10 * self.l2_norm(embedding)
+        return embedding
